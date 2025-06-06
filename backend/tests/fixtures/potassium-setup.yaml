@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: potassium
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: potassium-db-creds
+  namespace: potassium
+type: Opaque
+# IMPORTANT: Data values in Kubernetes Secrets must be base64 encoded.
+data:
+  username: azhzX3Rlc3RfdXNlcg==
+  password: SUxvdmVQb3RhdG9lcw==

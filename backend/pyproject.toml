@@ -1,0 +1,42 @@
+[project]
+name = "potassium"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.38.30",
+    "boto3-stubs[secretsmanager]>=1.38.30",
+    "fastapi>=0.115.12",
+    "kubernetes>=32.0.1",
+    "psycopg[binary]>=3.2.9",
+    "pydantic>=2.11.5",
+    "pydantic-settings>=2.9.1",
+    "sqlmodel>=0.0.24",
+    "uvicorn[standard]>=0.34.3",
+]
+
+[dependency-groups]
+dev = [
+    "moto[secretsmanager]>=5.1.5",
+    "pytest>=8.4.0",
+    "pytest-cov>=6.1.1",
+    "pytest-env>=1.1.5",
+    "pytest-kubernetes>=0.6.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-p no:warnings"
+testpaths = ["tests"]
+env = [
+    "AWS_REGION=us-east-1",
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+disable_error_code = ["call-arg", "import-untyped"]
+files = [
+    "potassium/*.py",
+    "tests/*.py",
+]

@@ -1,0 +1,49 @@
+repos:
+# ======== General / Repository-Wide Hooks ========
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+    -   id: check-yaml
+        args: [--allow-multiple-documents]
+    -   id: check-json
+    -   id: check-toml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: check-merge-conflict
+    -   id: check-added-large-files
+
+# ======== Python Backend Hooks (backend/) ========
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.5.24
+    hooks:
+      - id: uv-lock
+        files: ./backend/pyproject.toml
+        args: [--project, ./backend]
+      - id: uv-sync
+        files: ^backend/
+        args: [--project, ./backend]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+    # This runs the mypy static type checker.
+    -   id: mypy
+        name: mypy-check-backend
+        args: [ --config-file=./backend/pyproject.toml ]
+        files: ^backend/
+        additional_dependencies: [
+            "pydantic",
+            "pydantic-settings",
+            "sqlmodel",
+            "fastapi"
+        ]
