@@ -36,7 +36,6 @@ repos:
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.10.0
     hooks:
-    # This runs the mypy static type checker.
     -   id: mypy
         name: mypy-check-backend
         args: [ --config-file=./backend/pyproject.toml ]
