@@ -11,8 +11,8 @@ class SlackSecret(SecretSettings):
     max_slack_body: int = 20000
 
 
-def integrate_slack_notifier(secret_name: str) -> None:
-    notifier = Apprise(asset=AppriseAsset(app_id="Potassium"))
+def integrate_slack_notifier(app_name: str, secret_name: str) -> None:
+    notifier = Apprise(asset=AppriseAsset(app_id=app_name))
     slack_secret = SlackSecret(secret_name=secret_name)
     notifier.add(slack_secret.hook)
 
@@ -38,10 +38,10 @@ def integrate_slack_notifier(secret_name: str) -> None:
     logger.add(apprise_on_error, level="ERROR", filter={"apprise": False})
 
 
-def init_logs(verbose: bool = False, slack_secret: str | None = None) -> None:
+def init_logs(app_name: str, verbose: bool = False, slack_secret: str | None = None) -> None:
     logger.remove()
     logger.add(sys.stdout, level="DEBUG" if verbose else "INFO")
 
     if slack_secret:
         logger.info("Slack error notification integrated")
-        integrate_slack_notifier(secret_name=slack_secret)
+        integrate_slack_notifier(app_name=app_name, secret_name=slack_secret)

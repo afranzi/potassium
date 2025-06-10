@@ -12,7 +12,7 @@ from potassium.utils.logs import init_logs
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator:
-    init_logs(verbose=settings.debug, slack_secret=settings.slack_secret)
+    init_logs(verbose=settings.debug, app_name=settings.app_name, slack_secret=settings.slack_secret)
 
     logger.info("Starting up Potassium API...")
 
