@@ -2,6 +2,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from loguru import logger
 
 from potassium.debezium.client import KafkaConnectClient
+from potassium.debezium.exceptions import ConnectorFailedStateError
 from potassium.debezium.models import FullConnectorStatus
 
 scheduler = AsyncIOScheduler()
@@ -11,7 +12,8 @@ def get_scheduler():
     return scheduler
 
 
-async def check_connector_statuses_job():
+@logger.catch()
+async def check_connector_statuses_job(restart_connectors: bool) -> None:
     logger.info("APScheduler job: Checking connector statuses...")
     client = KafkaConnectClient()
     connectors = await client.list_connectors()
@@ -26,5 +28,8 @@ async def check_connector_statuses_job():
         logger.info(f"Successfully parsed status for {connector}: {status.model_dump_json(indent=2)}")
 
         if any(task.state == "FAILED" for task in status.tasks):
-            logger.info(f"Restarting {connector}!")
-            await client.restart_connectors(connector)
+            if restart_connectors:
+                logger.error(f"Connector {connector} is in FAILED state, proceeding to restart it programmatically.")
+                await client.restart_connectors(connector)
+            else:
+                raise ConnectorFailedStateError(connector=connector)

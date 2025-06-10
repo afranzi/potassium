@@ -10,3 +10,9 @@ class KafkaConnectAPIError(Exception):
 
 class ResponseParsingError(KafkaConnectAPIError):
     pass
+
+
+class ConnectorFailedStateError(Exception):
+    def __init__(self, connector: str):
+        self.connector = connector
+        super().__init__(f"Connector {connector} is in FAILED state.")

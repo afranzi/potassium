@@ -26,6 +26,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
             replace_existing=True,  # Replace job if it already exists from a previous run
             coalesce=True,  # Run job only once if multiple runs were missed
             max_instances=1,  # Allow only one concurrent instance of this job
+            kwargs={
+                "restart_connectors": settings.restart_connectors,
+            },
         )
         scheduler.start()
         logger.info(f"APScheduler started. Job scheduled every {settings.job_frequency_seconds}s.")
