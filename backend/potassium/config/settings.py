@@ -13,6 +13,7 @@ class PotassiumSettings(BaseSettings):
     # --- Background Job Settings ---
     job_enabled: bool = Field(default=True, description="Enable or disable the periodic connector status check job.")
     job_frequency_seconds: int = Field(default=60, gt=0, description="Frequency in seconds for the status check job.")
+    restart_connectors: bool = Field(default=True, description="Restart failed connectors automatically")
 
 
 class KafkaConnectSettings(BaseSettings):

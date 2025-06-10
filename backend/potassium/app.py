@@ -12,7 +12,7 @@ from potassium.utils.logs import init_logs
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator:
-    init_logs(verbose=settings.debug, slack_secret=settings.slack_secret)
+    init_logs(verbose=settings.debug, app_name=settings.app_name, slack_secret=settings.slack_secret)
 
     logger.info("Starting up Potassium API...")
 
@@ -26,6 +26,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
             replace_existing=True,  # Replace job if it already exists from a previous run
             coalesce=True,  # Run job only once if multiple runs were missed
             max_instances=1,  # Allow only one concurrent instance of this job
+            kwargs={
+                "restart_connectors": settings.restart_connectors,
+            },
         )
         scheduler.start()
         logger.info(f"APScheduler started. Job scheduled every {settings.job_frequency_seconds}s.")

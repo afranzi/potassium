@@ -2,6 +2,8 @@ from typing import List, Literal, Optional, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from potassium.debezium.exceptions import extract_root_cause_message
+
 ModelType = TypeVar("ModelType", bound=BaseModel)
 ConnectorStateType = Literal["RUNNING", "FAILED", "RESTARTING", "PAUSED", "UNASSIGNED"]
 ConnectorType = Literal["source", "sink"]
@@ -25,6 +27,10 @@ class ConnectorTask(BaseModel):
     worker_id: str
     trace: str | None = None
 
+    @property
+    def error_cause(self) -> str | None:
+        return extract_root_cause_message(self.trace) if self.trace else None
+
 
 class ConnectorStatus(BaseModel):
     state: ConnectorStateType
@@ -36,6 +42,10 @@ class FullConnectorStatus(BaseModel):
     connector: ConnectorStatus
     tasks: List[ConnectorTask]
     type: ConnectorType
+
+    @property
+    def task_errors(self) -> list[str]:
+        return list(filter(None, [task.error_cause for task in self.tasks]))
 
 
 class ConnectorConfig(BaseModel):
