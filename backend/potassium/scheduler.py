@@ -1,15 +1,8 @@
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from loguru import logger
 
 from potassium.debezium.client import KafkaConnectClient
 from potassium.debezium.exceptions import ConnectorFailedStateError
 from potassium.debezium.models import FullConnectorStatus
-
-scheduler = AsyncIOScheduler()
-
-
-def get_scheduler():
-    return scheduler
 
 
 @logger.catch()

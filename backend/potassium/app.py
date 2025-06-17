@@ -1,12 +1,15 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from loguru import logger
 
-from potassium.api import scheduler as scheduler_router
+from potassium.api.router import api_router
 from potassium.config.settings import settings
-from potassium.scheduler import check_connector_statuses_job, scheduler
+from potassium.debezium.client import KafkaConnectClient
+from potassium.kafka.client import KafkaClient, KafkaSettings
+from potassium.scheduler import check_connector_statuses_job
 from potassium.utils.logs import init_logs
 
 
@@ -16,8 +19,17 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
     logger.info("Starting up Potassium API...")
 
+    logger.info("Starting up Kafka clients...")
+    kafka_settings = KafkaSettings(secret_name=settings.kafka_secret)
+    app.state.kafka_client = KafkaClient(settings=kafka_settings)
+    app.state.kafka_connect_client = KafkaConnectClient()
+
     # Conditionally start the scheduler and add the job
     if settings.job_enabled:
+        logger.info("Setting up scheduler check...")
+        scheduler = AsyncIOScheduler()
+        app.state.scheduler = scheduler
+
         scheduler.add_job(
             check_connector_statuses_job,
             "interval",
@@ -45,11 +57,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
 
 app = FastAPI(lifespan=lifespan, title=settings.app_name, version="0.1.0")
+app.include_router(api_router, prefix="/api", tags=["API"])
 
 
 @app.get("/", tags=["Health Check"])
 def read_root():
     return {"status": "ok", "message": f"Welcome to {settings.app_name}!"}
-
-
-app.include_router(scheduler_router.router, prefix="/api/v1/scheduler", tags=["Scheduler"])
