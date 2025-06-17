@@ -4,7 +4,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from potassium.scheduler import get_scheduler
+from potassium.dependencies import get_scheduler
 
 router = APIRouter()
 

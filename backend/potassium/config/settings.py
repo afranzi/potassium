@@ -9,6 +9,7 @@ class PotassiumSettings(BaseSettings):
     app_name: str = "Potassium API"
     debug: bool = Field(default=False, description="Enable debug level logging")
     slack_secret: str | None = Field(default=None, description="Enable slack apprise notifications")
+    kafka_secret: str = Field(..., description="Kafka secret with client credentials")
 
     # --- Background Job Settings ---
     job_enabled: bool = Field(default=True, description="Enable or disable the periodic connector status check job.")
@@ -19,7 +20,7 @@ class PotassiumSettings(BaseSettings):
 class KafkaConnectSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="kafka_connect_")
 
-    uri: str = "http://localhost:12345"
+    uri: str = "https://kafka-connect.data.lokalise.cloud"
 
     def endpoint(self, url: str) -> str:
         return f"{self.uri}/{url}"
