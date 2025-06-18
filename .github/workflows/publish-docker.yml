@@ -26,6 +26,7 @@ jobs:
       - name: Extract project version
         id: project_version
         run: |
+          uv pip install toml
           VERSION=$(uv run toml get --toml-path=backend/pyproject.toml project.version)
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
