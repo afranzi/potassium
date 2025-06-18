@@ -27,8 +27,8 @@ jobs:
         id: project_version
         run: |
           uv venv
-          uv pip install toml
-          VERSION=$(uv run toml get --toml-path=backend/pyproject.toml project.version)
+          uv tool install toml-cli
+          VERSION=$(uv tool run toml get --toml-path=backend/pyproject.toml project.version)
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - name: Set up QEMU
