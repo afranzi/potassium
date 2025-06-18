@@ -45,7 +45,7 @@ jobs:
           tags: |
             type=raw,value=${{ env.VERSION }},enable={{is_default_branch}}
             type=raw,value=latest,enable={{is_default_branch}}
-            type=sha,prefix=dev,format=short,enable=!{{is_default_branch}}
+            type=sha,prefix=dev,format=short,enable=not {{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
